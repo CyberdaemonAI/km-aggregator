@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: km
+      POSTGRES_PASSWORD: km
+      POSTGRES_DB: km
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U km -d km"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://km:km@db:5432/km
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      EMBED_MODEL: ${EMBED_MODEL:-nomic-embed-text}
+      SYNTHESIS_MODEL: ${SYNTHESIS_MODEL:-llama3.3:70b}
+      MATTERMOST_WEBHOOK_URL: ${MATTERMOST_WEBHOOK_URL:-}
+      PROM_MEMORY_URL: ${PROM_MEMORY_URL:-}
+      PROM_MEMORY_ENABLED: ${PROM_MEMORY_ENABLED:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app/app:ro  # mount for dev hot-reload only — remove in prod
+
+volumes:
+  pgdata:
