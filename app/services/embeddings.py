@@ -30,15 +30,15 @@ async def embed_text(text: str) -> list[float] | None:
     # Truncate to ~8k chars to stay within context window
     text = text[:8000]
 
-    url = f"{settings.ollama_base_url}/api/embeddings"
-    payload = {"model": settings.embed_model, "prompt": text}
+    url = f"{settings.ollama_base_url}/api/embed"
+    payload = {"model": settings.embed_model, "input": text}
 
     try:
         async with httpx.AsyncClient(timeout=settings.ollama_timeout) as client:
             resp = await client.post(url, json=payload)
             resp.raise_for_status()
             data = resp.json()
-            embedding: list[float] = data.get("embedding", [])
+            embedding: list[float] = data.get("embeddings", [[]])[0]
             if len(embedding) != 768:
                 log.warning(
                     "unexpected embedding dimension %d (expected 768) — model: %s",
