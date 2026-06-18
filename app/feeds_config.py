@@ -346,6 +346,12 @@ WATCHED_URLS: list[dict] = [
         "check_frequency": "weekly",
     },
     {
+        "name": "Capsule Security Blog",
+        "url": "https://capsulesecurity.io/blog",
+        "category": "ai-security",
+        "check_frequency": "weekly",
+    },
+    {
         "name": "Microsoft Entra Identity Docs",
         "url": "https://learn.microsoft.com/en-us/entra/identity/",
         "category": "identity-iam",
