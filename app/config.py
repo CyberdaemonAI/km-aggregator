@@ -15,6 +15,7 @@ class Settings(BaseSettings):
 
     # ── Inference (Ollama on Thor — self-hosted, no paid API) ──────────────────
     ollama_base_url: str = "http://localhost:11434"
+    embed_ollama_url: str = ""  # if set, used for embeddings instead of ollama_base_url (e.g. separate embed node)
     embed_model: str = "nomic-embed-text"
     synthesis_model: str = "llama3.3:70b"
     ollama_timeout: int = 120  # seconds
