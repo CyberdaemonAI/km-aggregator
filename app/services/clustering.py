@@ -62,6 +62,9 @@ async def cluster_recent_articles(
             continue
 
         # pgvector cosine similarity query
+        # Convert embedding to pgvector '[f1,f2,...]' format — numpy str() is space-separated, not parseable
+        emb_list = anchor.embedding.tolist() if hasattr(anchor.embedding, 'tolist') else list(anchor.embedding)
+        anchor_vec_str = '[' + ','.join(str(x) for x in emb_list) + ']'
         neighbors_result = await db.execute(
             text(
                 """
@@ -78,7 +81,7 @@ async def cluster_recent_articles(
                 """
             ),
             {
-                "anchor_vec": str(anchor.embedding),
+                "anchor_vec": anchor_vec_str,
                 "anchor_id": anchor.id,
                 "cutoff": cutoff,
                 "threshold": settings.cluster_similarity_threshold,

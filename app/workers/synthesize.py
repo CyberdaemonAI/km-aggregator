@@ -49,6 +49,7 @@ async def run_synthesize() -> dict:
 
     async with AsyncSessionLocal() as db:
         # 1. Cluster recent articles
+        cluster_ids: list[int] = []  # default if clustering throws
         try:
             cluster_ids = await cluster_svc.cluster_recent_articles(db, hours=24)
             stats["clusters_created"] = len(cluster_ids)
