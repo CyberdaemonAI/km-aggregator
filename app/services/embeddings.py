@@ -31,7 +31,8 @@ async def embed_text(text: str) -> list[float] | None:
     text = text[:8000]
 
     url = f"{settings.ollama_base_url}/api/embed"
-    payload = {"model": settings.embed_model, "input": text}
+    # num_gpu: 0 forces CPU inference — Blackwell unified memory fails GPU load for nomic-bert
+    payload = {"model": settings.embed_model, "input": text, "options": {"num_gpu": 0}}
 
     try:
         async with httpx.AsyncClient(timeout=settings.ollama_timeout) as client:
